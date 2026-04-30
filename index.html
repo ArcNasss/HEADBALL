@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeadBall</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="gamemenu">
+        <h2>Game setting</h2>
+        <p class="menu-subtitle">Lengkapi data pemain, tim, dan bola. Ringkasan pilihan akan tampil otomatis di bawah.</p>
+        <div class="inputbox">
+            <div class="setup-grid">
+                <div class="input-card">
+                    <div class="input-card-header">
+                        <span class="step-badge">1</span>
+                        <h3>Player Name</h3>
+                    </div>
+                    <div class="field-stack">
+                        <label class="field-label" for="username1">Player 1</label>
+                        <input type="text" placeholder="Username Player 1" required name="player1" id="username1" value="">
+                    </div>
+                    <div class="field-stack">
+                        <label class="field-label" for="username2">Player 2</label>
+                        <input type="text" placeholder="Username Player 2" required name="player2" id="username2" value="">
+                    </div>
+                </div>
+                <div class="input-card">
+                    <div class="input-card-header">
+                        <span class="step-badge">2</span>
+                        <h3>Player Team</h3>
+                    </div>
+                    <div class="team-grid">
+                        <div class="field-stack">
+                            <label class="field-label" for="team1">Player 1 Team</label>
+                            <select name="team1" id="team1" required>
+                                <option value="" disabled selected hidden>Player 1 Team</option>
+                                <option value="1">Brazil</option>
+                                <option value="2">England</option>
+                                <option value="3">Germany</option>
+                                <option value="4">Italy</option>
+                                <option value="5">Japan</option>
+                                <option value="6">Netherlands</option>
+                                <option value="7">Portugal</option>
+                                <option value="8">Spain</option>
+                            </select>
+                        </div>
+                        <div class="field-stack">
+                            <label class="field-label" for="team2">Player 2 Team</label>
+                            <select name="team2" id="team2" required>
+                                <option value="" disabled selected hidden>Player 2 Team</option>
+                                <option value="1">Brazil</option>
+                                <option value="2">England</option>
+                                <option value="3">Germany</option>
+                                <option value="4">Italy</option>
+                                <option value="5">Japan</option>
+                                <option value="6">Netherlands</option>
+                                <option value="7">Portugal</option>
+                                <option value="8">Spain</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ball input-card">
+                <div class="input-card-header">
+                    <span class="step-badge">3</span>
+                    <h3>Chose Ball</h3>
+                </div>
+                <div class="ball-options">
+                    <label class="ball-option">
+                        <input type="radio" name="ball" value="1">
+                        <img src="source/Ball 01.png" alt="Ball 01">
+                        <span>Ball 01</span>
+                    </label>
+                    <label class="ball-option">
+                        <input type="radio" name="ball" value="2">
+                        <img src="source/Ball 02.png" alt="Ball 02">
+                        <span>Ball 02</span>
+                    </label>
+                </div>
+            </div>
+            <div class="menu-preview">
+                <div class="preview-header">
+                    <h3>Match Preview</h3>
+                    <span id="setupStatusBadge">Not ready</span>
+                </div>
+                <div class="preview-grid">
+                    <div class="preview-item">
+                        <span class="preview-label">Player 1</span>
+                        <strong id="previewPlayer1">-</strong>
+                    </div>
+                    <div class="preview-item">
+                        <span class="preview-label">Player 2</span>
+                        <strong id="previewPlayer2">-</strong>
+                    </div>
+                    <div class="preview-item">
+                        <span class="preview-label">Team 1</span>
+                        <strong id="previewTeam1">-</strong>
+                    </div>
+                    <div class="preview-item">
+                        <span class="preview-label">Team 2</span>
+                        <strong id="previewTeam2">-</strong>
+                    </div>
+                    <div class="preview-item preview-item-wide">
+                        <span class="preview-label">Ball</span>
+                        <strong id="previewBall">-</strong>
+                    </div>
+                </div>
+                <div class="preview-progress">
+                    <span id="previewProgressBar"></span>
+                </div>
+            </div>
+            <div class="start input-card">
+                <button onclick="PlayGame()">Start</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="instruction" style="display: none;">
+        <h2>INFO</h2>
+        <p id="instructionText">Lengkapi semua input terlebih dahulu.</p>
+        <button type="button" onclick="hideInstruction()">OK</button>
+    </div>
+    
+    <div id="game">
+        <div class="hud">
+            <div class="hud-top">
+                <div class="hud-pill hud-pill-left">PLAYER NAME</div>
+                <div class="hud-pill hud-pill-right">MATCH HISTORY</div>
+            </div>
+
+            <div class="scoreboard">
+                <div class="team-card">
+                    <img src="source/Flag/Brazil.png" alt="flag1" id="flag1" />
+                    <h3 id="p1name"></h3>
+                </div>
+
+                <div class="score">
+                    <div id="score1"></div>
+                    <div id="score2"></div>
+                </div>
+
+                <div class="team-card">
+                    <img src="source/Flag/Brazil.png" alt="flag2" id="flag2" />
+                    <h3 id="p2name"></h3>
+                </div>
+            </div>
+
+            <div class="timer">
+                <h2>TIMER</h2>
+                <p id="timeroutput">01:00</p>
+            </div>
+        </div>
+        <canvas id="canvas" width="1200" height="450"></canvas>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
