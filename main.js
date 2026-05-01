@@ -52,11 +52,23 @@ function restartMatch() {
 }
 
 function requestFullscreenMode() {
-    if (document.fullscreenElement || !document.documentElement.requestFullscreen) {
+    if (document.fullscreenElement) {
+        console.log('Already in fullscreen');
         return Promise.resolve();
     }
 
-    return document.documentElement.requestFullscreen();
+    if (!document.documentElement.requestFullscreen) {
+        console.log('Fullscreen API not supported');
+        return Promise.reject(new Error('Fullscreen not supported'));
+    }
+
+    console.log('Requesting fullscreen...');
+    return document.documentElement.requestFullscreen().then(() => {
+        console.log('Fullscreen request granted');
+    }).catch((err) => {
+        console.warn('Fullscreen request denied:', err.message);
+        throw err;
+    });
 }
 
 function showMatchResult(winnerText, finalScoreText) {
@@ -112,7 +124,9 @@ if (missingFields.length > 0) {
 }
 
 hideInstruction();
-requestFullscreenMode().catch(() => {});
+requestFullscreenMode().catch((err) => {
+    console.warn('Could not enter fullscreen from Start:', err.message);
+});
 document.getElementById('gamemenu').style.display = 'none'; 
 document.getElementById('canvas').style.display = 'block';
 document.getElementById('game').style.display = 'block';
@@ -836,7 +850,8 @@ document.addEventListener('DOMContentLoaded', () => {
     requestFullscreenMode().then(() => {
         document.body.classList.add('is-fullscreen');
         hideFsHint();
-    }).catch(() => {
+    }).catch((err) => {
+        console.log('Auto fullscreen blocked, showing hint:', err.message);
         showFsHint();
     });
 
@@ -846,7 +861,9 @@ document.addEventListener('DOMContentLoaded', () => {
             requestFullscreenMode().then(() => {
                     hideFsHint();
                     document.body.classList.add('is-fullscreen');
-                }).catch(() => {});
+                }).catch((err) => {
+                    console.warn('Manual fullscreen request failed:', err.message);
+                });
         });
     }
 
