@@ -535,6 +535,48 @@ body {
     box-shadow: 0 12px 26px rgba(21, 79, 160, 0.28);
 }
 
+/* Fullscreen hint overlay */
+#fsHint {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 12, 24, 0.55);
+}
+
+.fs-card {
+    background: linear-gradient(180deg, rgba(14,27,50,0.98), rgba(24,41,74,0.98));
+    color: #eaf2ff;
+    padding: 20px 22px;
+    border-radius: 14px;
+    text-align: center;
+    width: min(420px, 92%);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+}
+
+.fs-card p { margin: 8px 0; }
+
+.fs-actions { margin-top: 12px; }
+
+#fsEnter {
+    background: linear-gradient(180deg, #1f74d8 0%, #154fa0 100%);
+    border: none;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* When fullscreen is not available automatically, ensure game fills viewport */
+.force-full #game,
+.is-fullscreen #game {
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
 .control{
     overflow-wrap: break-word;
 }

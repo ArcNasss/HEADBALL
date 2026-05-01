@@ -807,3 +807,56 @@ if (sessionStorage.getItem(AUTO_RESTART_KEY) === '1' && savedMatch) {
     applySavedMatch(savedMatch);
     PlayGame();
 }
+
+// Attempt to enter fullscreen on page load. Browsers may block this without user gesture.
+document.addEventListener('DOMContentLoaded', () => {
+    const fsHint = document.getElementById('fsHint');
+    const fsEnter = document.getElementById('fsEnter');
+
+    function showFsHint() {
+        if (fsHint) fsHint.style.display = 'flex';
+        document.body.classList.add('force-full');
+    }
+
+    function hideFsHint() {
+        if (fsHint) fsHint.style.display = 'none';
+        document.body.classList.remove('force-full');
+    }
+
+    // Try to request fullscreen automatically
+    if (document.fullscreenEnabled) {
+        document.documentElement.requestFullscreen().then(() => {
+            document.body.classList.add('is-fullscreen');
+            hideFsHint();
+        }).catch(() => {
+            // blocked by browser
+            showFsHint();
+        });
+    } else {
+        // Fullscreen not available
+        showFsHint();
+    }
+
+    // Click handler for user to trigger fullscreen (user gesture)
+    if (fsEnter) {
+        fsEnter.addEventListener('click', () => {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().then(() => {
+                    hideFsHint();
+                    document.body.classList.add('is-fullscreen');
+                }).catch(() => {
+                    // still blocked
+                });
+            }
+        });
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            hideFsHint();
+            document.body.classList.add('is-fullscreen');
+        } else {
+            document.body.classList.remove('is-fullscreen');
+        }
+    });
+});
