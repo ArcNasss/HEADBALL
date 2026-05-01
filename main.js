@@ -51,6 +51,14 @@ function restartMatch() {
     location.reload();
 }
 
+function requestFullscreenMode() {
+    if (document.fullscreenElement || !document.documentElement.requestFullscreen) {
+        return Promise.resolve();
+    }
+
+    return document.documentElement.requestFullscreen();
+}
+
 function showMatchResult(winnerText, finalScoreText) {
     const resultTitle = document.getElementById('matchResultTitle');
     const resultScore = document.getElementById('matchResultScore');
@@ -104,6 +112,7 @@ if (missingFields.length > 0) {
 }
 
 hideInstruction();
+requestFullscreenMode().catch(() => {});
 document.getElementById('gamemenu').style.display = 'none'; 
 document.getElementById('canvas').style.display = 'block';
 document.getElementById('game').style.display = 'block';
@@ -824,30 +833,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Try to request fullscreen automatically
-    if (document.fullscreenEnabled) {
-        document.documentElement.requestFullscreen().then(() => {
-            document.body.classList.add('is-fullscreen');
-            hideFsHint();
-        }).catch(() => {
-            // blocked by browser
-            showFsHint();
-        });
-    } else {
-        // Fullscreen not available
+    requestFullscreenMode().then(() => {
+        document.body.classList.add('is-fullscreen');
+        hideFsHint();
+    }).catch(() => {
         showFsHint();
-    }
+    });
 
     // Click handler for user to trigger fullscreen (user gesture)
     if (fsEnter) {
         fsEnter.addEventListener('click', () => {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen().then(() => {
+            requestFullscreenMode().then(() => {
                     hideFsHint();
                     document.body.classList.add('is-fullscreen');
-                }).catch(() => {
-                    // still blocked
-                });
-            }
+                }).catch(() => {});
         });
     }
 

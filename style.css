@@ -538,25 +538,28 @@ body {
 /* Fullscreen hint overlay */
 #fsHint {
     position: fixed;
-    inset: 0;
+    top: 14px;
+    right: 14px;
     z-index: 20000;
     display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(6, 12, 24, 0.55);
+    align-items: flex-start;
+    justify-content: flex-end;
+    background: transparent;
+    pointer-events: none;
 }
 
 .fs-card {
     background: linear-gradient(180deg, rgba(14,27,50,0.98), rgba(24,41,74,0.98));
     color: #eaf2ff;
-    padding: 20px 22px;
-    border-radius: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
     text-align: center;
-    width: min(420px, 92%);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    width: min(320px, 92vw);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.35);
+    pointer-events: auto;
 }
 
-.fs-card p { margin: 8px 0; }
+.fs-card p { margin: 6px 0; font-size: 14px; }
 
 .fs-actions { margin-top: 12px; }
 
