@@ -41,14 +41,45 @@ function applySavedMatch(config) {
 }
 
 function goToMenu() {
+    // Hide game and result overlays
+    document.getElementById('matchResult').style.display = 'none';
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('canvas').style.display = 'none';
+    
+    // Show menu
+    document.getElementById('gamemenu').style.display = 'block';
+    
+    // Clear form inputs
+    document.getElementById('username1').value = '';
+    document.getElementById('username2').value = '';
+    document.getElementById('team1').value = '';
+    document.getElementById('team2').value = '';
+    document.querySelectorAll('input[name="ball"]').forEach(el => el.checked = false);
+    
+    // Clear session storage
     sessionStorage.removeItem(AUTO_RESTART_KEY);
     sessionStorage.removeItem(LAST_MATCH_KEY);
-    location.reload();
+    
+    console.log('Menu: back to main screen without reload (fullscreen preserved)');
 }
 
 function restartMatch() {
-    sessionStorage.setItem(AUTO_RESTART_KEY, '1');
-    location.reload();
+    // Hide result overlay
+    document.getElementById('matchResult').style.display = 'none';
+    
+    // Get saved match data and restart
+    const savedMatch = getLastMatch();
+    if (savedMatch) {
+        applySavedMatch(savedMatch);
+        // Use setTimeout to ensure DOM is ready before calling PlayGame
+        setTimeout(() => {
+            PlayGame();
+            console.log('Restart: game restarted with saved data (fullscreen preserved)');
+        }, 0);
+    } else {
+        console.warn('No saved match data found, returning to menu');
+        goToMenu();
+    }
 }
 
 function requestFullscreenMode() {
@@ -89,8 +120,47 @@ function showMatchResult(winnerText, finalScoreText) {
     }
 }
 
-function PlayGame(){
-let Username1 = document.getElementById("username1").value.trim();
+function waitForAssetsReady(p1, p2) {
+    return new Promise((resolve) => {
+        let loadedCount = 0;
+        const totalToLoad = 2;
+
+        function onImageLoad() {
+            loadedCount++;
+            if (loadedCount >= totalToLoad) {
+                console.log('All assets ready, starting game');
+                resolve();
+            }
+        }
+
+        // Wait for first idle image of both players to load
+        if (p1.idleAnimation && p1.idleAnimation[0]) {
+            if (p1.idleAnimation[0].complete) {
+                loadedCount++;
+            } else {
+                p1.idleAnimation[0].onload = onImageLoad;
+                p1.idleAnimation[0].onerror = onImageLoad; // fallback
+            }
+        }
+
+        if (p2.idleAnimation2 && p2.idleAnimation2[0]) {
+            if (p2.idleAnimation2[0].complete) {
+                loadedCount++;
+            } else {
+                p2.idleAnimation2[0].onload = onImageLoad;
+                p2.idleAnimation2[0].onerror = onImageLoad; // fallback
+            }
+        }
+
+        // If all assets are already loaded or don't exist
+        if (loadedCount >= totalToLoad) {
+            setTimeout(resolve, 0);
+        }
+    });
+}
+
+function PlayGame() {
+    let Username1 = document.getElementById("username1").value.trim();
 let Username2 = document.getElementById("username2").value.trim();
 let team1 = document.getElementById("team1").value;
 let team2 = document.getElementById("team2").value;
@@ -124,6 +194,7 @@ if (missingFields.length > 0) {
 }
 
 hideInstruction();
+document.getElementById('matchResult').style.display = 'none';
 requestFullscreenMode().catch((err) => {
     console.warn('Could not enter fullscreen from Start:', err.message);
 });
@@ -690,76 +761,72 @@ class Goal2 {
     }
 }
 
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    let p1 = new Player(170, 100);
+    let p2 = new Player(880, 950);
+    let ball = new Ball(canvas.width / 2 - 25, 0);
+    let goal = new Goal(50, 100);
+    let goal2 = new Goal2(1025, 100);
 
-const p1 = new Player(170, 100);
-const p2 = new Player(880,950);
-const ball = new Ball(canvas.width / 2 - 25, 0);
-const goal = new Goal(50, 100);
-const goal2 = new Goal2(1025, 100);
-
-//Player 1 Movement
-
-window.addEventListener('keydown', (e) => {
-    if (e.key == "d" | e.key == "D") {
-        p1.idlecon = false;
-        p1.forwardcon = true;
-    }
-    if (e.key == "a" | e.key == "A") {
-        p1.idlecon = false;
-        p1.backwardcon = true;
-    }
-    if (e.key == "w" | e.key == "W") {
-        p1.idlecon = false;
-        if (!p1.downcon) {
-            p1.jumpcon = true;
+    // Setup event listeners for this game session
+    let playerListenerHandler = (e) => {
+        //Player 1 Movement
+        if (e.key == "d" | e.key == "D") {
+            p1.idlecon = false;
+            p1.forwardcon = true;
         }
-    }
-});
-window.addEventListener('keyup', (e) => {
-    if (e.key == "d" | e.key == "D") {
-        p1.forwardcon = false;
-        p1.idlecon = true;
-    }
-    if (e.key == "a" | e.key == "A") {
-        p1.backwardcon = false;
-        p1.idlecon = true;
-    }
-});
-
-//Player 2 Movement
-
-window.addEventListener('keydown', (e) => {
-    if (e.key == "37" | e.key == "ArrowLeft") {
-        p2.idlecon = false;
-        p2.forwardcon = true;
-    }
-    if (e.key == "39" | e.key == "ArrowRight") {
-        p2.idlecon = false;
-        p2.backwardcon = true;
-    }
-    if (e.key == "38" | e.key == "ArrowUp") {
-        p2.idlecon = false;
-        if (!p2.downcon) {
-            p2.jumpcon = true;
+        if (e.key == "a" | e.key == "A") {
+            p1.idlecon = false;
+            p1.backwardcon = true;
         }
-    }
-});
+        if (e.key == "w" | e.key == "W") {
+            p1.idlecon = false;
+            if (!p1.downcon) {
+                p1.jumpcon = true;
+            }
+        }
+        //Player 2 Movement
+        if (e.key == "37" | e.key == "ArrowLeft") {
+            p2.idlecon = false;
+            p2.forwardcon = true;
+        }
+        if (e.key == "39" | e.key == "ArrowRight") {
+            p2.idlecon = false;
+            p2.backwardcon = true;
+        }
+        if (e.key == "38" | e.key == "ArrowUp") {
+            p2.idlecon = false;
+            if (!p2.downcon) {
+                p2.jumpcon = true;
+            }
+        }
+    };
 
-window.addEventListener('keyup', (e) => {
-    if (e.key == "37" | e.key == "ArrowLeft") {
-        p2.forwardcon = false;
-        p2.idlecon = true;
-    }
-    if (e.key == "39" | e.key == "ArrowRight") {
-        p2.backwardcon = false;
-        p2.idlecon = true;
-    }
-});
+    let playerListenerKeyUp = (e) => {
+        if (e.key == "d" | e.key == "D") {
+            p1.forwardcon = false;
+            p1.idlecon = true;
+        }
+        if (e.key == "a" | e.key == "A") {
+            p1.backwardcon = false;
+            p1.idlecon = true;
+        }
+        if (e.key == "37" | e.key == "ArrowLeft") {
+            p2.forwardcon = false;
+            p2.idlecon = true;
+        }
+        if (e.key == "39" | e.key == "ArrowRight") {
+            p2.backwardcon = false;
+            p2.idlecon = true;
+        }
+    };
 
-var frame = 0;
-function animate() {
+    window.addEventListener('keydown', playerListenerHandler);
+    window.addEventListener('keyup', playerListenerKeyUp);
+
+    let frame = 0;
+    function animate() {
     if (gameEnded) {
         return;
     }
@@ -819,9 +886,16 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-startCounter();
-animate();
-
+    // Wait for all assets to render before starting game timer and animation loop
+    waitForAssetsReady(p1, p2).then(() => {
+        console.log('All assets loaded, starting timer and game loop');
+        startCounter();
+        animate();
+    }).catch((err) => {
+        console.warn('Asset loading timeout, starting anyway:', err.message);
+        startCounter();
+        animate();
+    });
 }
 
 const savedMatch = getLastMatch();
