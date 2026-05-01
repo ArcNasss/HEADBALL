@@ -9,8 +9,9 @@
 <body>
 
     <div id="gamemenu">
-        <h2>Game setting</h2>
-        <p class="menu-subtitle">Lengkapi data pemain, tim, dan bola. Ringkasan pilihan akan tampil otomatis di bawah.</p>
+        
+        <h2>HEAD BALL GAME SPMB RPL SMKN 4 BOJONEGORO </h2>
+        <p class="menu-subtitle">Lengkapi data pemain, tim, dan bola untuk memulai pertandingan.</p>
         <div class="inputbox">
             <div class="setup-grid">
                 <div class="input-card">
@@ -82,37 +83,6 @@
                     </label>
                 </div>
             </div>
-            <div class="menu-preview">
-                <div class="preview-header">
-                    <h3>Match Preview</h3>
-                    <span id="setupStatusBadge">Not ready</span>
-                </div>
-                <div class="preview-grid">
-                    <div class="preview-item">
-                        <span class="preview-label">Player 1</span>
-                        <strong id="previewPlayer1">-</strong>
-                    </div>
-                    <div class="preview-item">
-                        <span class="preview-label">Player 2</span>
-                        <strong id="previewPlayer2">-</strong>
-                    </div>
-                    <div class="preview-item">
-                        <span class="preview-label">Team 1</span>
-                        <strong id="previewTeam1">-</strong>
-                    </div>
-                    <div class="preview-item">
-                        <span class="preview-label">Team 2</span>
-                        <strong id="previewTeam2">-</strong>
-                    </div>
-                    <div class="preview-item preview-item-wide">
-                        <span class="preview-label">Ball</span>
-                        <strong id="previewBall">-</strong>
-                    </div>
-                </div>
-                <div class="preview-progress">
-                    <span id="previewProgressBar"></span>
-                </div>
-            </div>
             <div class="start input-card">
                 <button onclick="PlayGame()">Start</button>
             </div>
@@ -124,12 +94,24 @@
         <p id="instructionText">Lengkapi semua input terlebih dahulu.</p>
         <button type="button" onclick="hideInstruction()">OK</button>
     </div>
+
+    <div id="matchResult" style="display: none;">
+        <div class="result-card">
+            <p class="result-label">MATCH OVER</p>
+            <h2 id="matchResultTitle">Pemenang</h2>
+            <p id="matchResultScore">Skor Akhir 0 - 0</p>
+            <div class="result-actions">
+                <button type="button" onclick="goToMenu()">Menu</button>
+                <button type="button" onclick="restartMatch()">Restart</button>
+            </div>
+        </div>
+    </div>
     
     <div id="game">
         <div class="hud">
             <div class="hud-top">
-                <div class="hud-pill hud-pill-left">PLAYER NAME</div>
-                <div class="hud-pill hud-pill-right">MATCH HISTORY</div>
+                <div class="hud-pill hud-pill-left">RPL SMKN 4 BOJONEGORO</div>
+                <div class="hud-pill hud-pill-right"><img src="source/logo.png" alt="" width="100"></div>
             </div>
 
             <div class="scoreboard">

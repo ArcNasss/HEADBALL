@@ -9,6 +9,66 @@ function hideInstruction() {
     document.getElementById('instruction').style.display = 'none';
 }
 
+const LAST_MATCH_KEY = 'headball.lastMatch';
+const AUTO_RESTART_KEY = 'headball.autoRestart';
+
+function saveLastMatch(config) {
+    sessionStorage.setItem(LAST_MATCH_KEY, JSON.stringify(config));
+}
+
+function getLastMatch() {
+    try {
+        return JSON.parse(sessionStorage.getItem(LAST_MATCH_KEY));
+    } catch (error) {
+        return null;
+    }
+}
+
+function applySavedMatch(config) {
+    if (!config) {
+        return;
+    }
+
+    document.getElementById('username1').value = config.Username1 || '';
+    document.getElementById('username2').value = config.Username2 || '';
+    document.getElementById('team1').value = config.team1 || '';
+    document.getElementById('team2').value = config.team2 || '';
+
+    const ballOption = document.querySelector(`input[name="ball"][value="${config.ballimg}"]`);
+    if (ballOption) {
+        ballOption.checked = true;
+    }
+}
+
+function goToMenu() {
+    sessionStorage.removeItem(AUTO_RESTART_KEY);
+    sessionStorage.removeItem(LAST_MATCH_KEY);
+    location.reload();
+}
+
+function restartMatch() {
+    sessionStorage.setItem(AUTO_RESTART_KEY, '1');
+    location.reload();
+}
+
+function showMatchResult(winnerText, finalScoreText) {
+    const resultTitle = document.getElementById('matchResultTitle');
+    const resultScore = document.getElementById('matchResultScore');
+    const resultOverlay = document.getElementById('matchResult');
+
+    if (resultTitle) {
+        resultTitle.textContent = winnerText;
+    }
+
+    if (resultScore) {
+        resultScore.textContent = finalScoreText;
+    }
+
+    if (resultOverlay) {
+        resultOverlay.style.display = 'flex';
+    }
+}
+
 function PlayGame(){
 let Username1 = document.getElementById("username1").value.trim();
 let Username2 = document.getElementById("username2").value.trim();
@@ -52,6 +112,15 @@ let seconds = 60;
 let counterInterval;
 let score1 = 0;
 let score2 = 0;
+let gameEnded = false;
+
+saveLastMatch({
+    Username1,
+    Username2,
+    team1,
+    team2,
+    ballimg,
+});
 
 let counterDisplay = document.getElementById('timeroutput');
 document.getElementById("p1name").innerHTML = Username1;
@@ -113,9 +182,27 @@ function startCounter() {
   counterInterval = setInterval(updateCounter, 1000);
 }
 
+function endMatch() {
+    if (gameEnded) {
+        return;
+    }
+
+    gameEnded = true;
+    stopCounter();
+
+    let winnerText = 'Hasil Seri';
+    if (score1 > score2) {
+        winnerText = `${Username1} Menang`;
+    } else if (score2 > score1) {
+        winnerText = `${Username2} Menang`;
+    }
+
+    showMatchResult(winnerText, `Skor Akhir ${score1} - ${score2}`);
+}
+
 function updateCounter() {
     if (seconds <= 0) {
-    stopCounter();
+        endMatch();
         return;
   }
 
@@ -123,7 +210,7 @@ function updateCounter() {
     counterDisplay.textContent = formatTime(seconds);
 
     if (seconds === 0) {
-        stopCounter();
+        endMatch();
     }
 }
 
@@ -650,6 +737,10 @@ window.addEventListener('keyup', (e) => {
 
 var frame = 0;
 function animate() {
+    if (gameEnded) {
+        return;
+    }
+
     frame++;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     p1.draw();
@@ -708,4 +799,11 @@ function animate() {
 startCounter();
 animate();
 
+}
+
+const savedMatch = getLastMatch();
+if (sessionStorage.getItem(AUTO_RESTART_KEY) === '1' && savedMatch) {
+    sessionStorage.removeItem(AUTO_RESTART_KEY);
+    applySavedMatch(savedMatch);
+    PlayGame();
 }
